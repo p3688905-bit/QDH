@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>清代歷史互動學堂｜清史簡論 × 八旗制度</title>
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/noto-serif-tc@5/400.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/noto-serif-tc@5/600.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/noto-serif-tc@5/700.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/noto-serif-tc@5/900.css" rel="stylesheet">
+<style>
+:root{
+  --bg:#14100c; --panel:#1f1812; --panel2:#291f15; --line:#3e2f1e;
+  --gold:#d8a94e; --gold2:#f0cf8a; --red:#b8402f; --red2:#d96a4f;
+  --text:#efe6d3; --muted:#b7a98f; --green:#6f9e6a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{font-family:'Noto Serif TC',serif;background:var(--bg);color:var(--text);line-height:1.75;overflow-x:hidden}
+::selection{background:var(--gold);color:#1a1208}
+img{max-width:100%}
+button{font-family:inherit;cursor:pointer}
+
+/* ===== 頂部進度條 ===== */
+#progressBar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--red),var(--gold));width:0;z-index:1000}
+
+/* ===== 導覽列 ===== */
+nav{position:sticky;top:0;z-index:900;background:rgba(20,16,12,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav-inner{max-width:1160px;margin:0 auto;display:flex;align-items:center;gap:8px;padding:14px 20px;flex-wrap:wrap}
+.nav-logo{font-weight:900;color:var(--gold2);letter-spacing:2px;margin-right:auto;font-size:1.05rem}
+.nav-logo span{color:var(--red2)}
+nav a{color:var(--muted);text-decoration:none;padding:8px 14px;border-radius:999px;font-size:.92rem;transition:.25s;border:1px solid transparent}
+nav a:hover{color:var(--gold2)}
+nav a.active{color:var(--gold2);background:rgba(216,169,78,.12);border-color:rgba(216,169,78,.35)}
+
+/* ===== 英雄區 ===== */
+header.hero{position:relative;min-height:82vh;display:flex;align-items:flex-end;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:url('https://image.qwenlm.ai/public_source/be152eb7-4e95-419a-9204-4070c2dc6750/15640386b-c793-4484-a44d-941ee3b1041f.png') center/cover no-repeat;filter:saturate(.92)}
+.hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,16,12,.25) 0%,rgba(20,16,12,.15) 40%,rgba(20,16,12,.96) 100%)}
+.hero-content{position:relative;z-index:2;max-width:1160px;margin:0 auto;padding:60px 20px 56px;width:100%}
+.hero-kicker{color:var(--gold);letter-spacing:6px;font-size:.85rem;margin-bottom:14px}
+.hero-title{font-size:clamp(2.2rem,6vw,4rem);font-weight:900;letter-spacing:6px;text-shadow:0 4px 30px rgba(0,0,0,.6)}
+.hero-title em{font-style:normal;color:var(--gold2)}
+.hero-sub{margin-top:14px;color:var(--muted);max-width:640px;font-size:1.02rem}
+.hero-chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+.chip{padding:8px 16px;border:1px solid rgba(216,169,78,.4);border-radius:999px;color:var(--gold2);font-size:.85rem;background:rgba(20,16,12,.55);backdrop-filter:blur(4px)}
+.hero-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:34px;max-width:820px}
+.stat{background:rgba(31,24,18,.9);padding:18px 14px;text-align:center}
+.stat b{display:block;font-size:1.5rem;color:var(--gold2);font-weight:900}
+.stat span{font-size:.8rem;color:var(--muted);letter-spacing:2px}
+
+/* ===== 通用區塊 ===== */
+section{max-width:1160px;margin:0 auto;padding:80px 20px 30px}
+.sec-head{margin-bottom:36px}
+.sec-label{color:var(--red2);letter-spacing:5px;font-size:.82rem;font-weight:700}
+.sec-title{font-size:clamp(1.6rem,3.4vw,2.3rem);font-weight:900;letter-spacing:3px;margin-top:6px}
+.sec-title::after{content:'';display:block;width:64px;height:3px;background:linear-gradient(90deg,var(--red),var(--gold));margin-top:12px;border-radius:2px}
+.sec-desc{color:var(--muted);margin-top:14px;max-width:760px}
+.card{background:linear-gradient(160deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:14px}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:none}
+
+/* ===== 翻卡（特點）===== */
+.flip-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+.flip{perspective:1200px;height:210px;cursor:pointer}
+.flip-inner{position:relative;width:100%;height:100%;transition:transform .7s cubic-bezier(.4,.2,.2,1);transform-style:preserve-3d}
+.flip.flipped .flip-inner{transform:rotateY(180deg)}
+.flip-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:14px;padding:22px;display:flex;flex-direction:column;justify-content:center;border:1px solid var(--line)}
+.flip-front{background:linear-gradient(160deg,#241a10,#2e2113)}
+.flip-front .num{font-size:2.2rem;font-weight:900;color:var(--gold);opacity:.9}
+.flip-front h3{font-size:1.08rem;letter-spacing:1px;margin-top:8px}
+.flip-front .hint{color:var(--muted);font-size:.78rem;margin-top:12px;letter-spacing:2px}
+.flip-back{background:linear-gradient(160deg,#3a2417,#4a2c1a);transform:rotateY(180deg);border-color:rgba(216,169,78,.45)}
+.flip-back h4{color:var(--gold2);margin-bottom:10px;font-size:1rem}
+.flip-back p{font-size:.9rem;color:var(--text)}
+
+/* ===== 時間軸 ===== */
+.tl-wrap{display:grid;grid-template-columns:280px 1fr;gap:22px}
+@media(max-width:860px){.tl-wrap{grid-template-columns:1fr}}
+.tl-btns{display:flex;flex-direction:column;gap:10px}
+.tl-btn{text-align:left;padding:16px 18px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--text);transition:.25s;position:relative;overflow:hidden}
+.tl-btn::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold);opacity:0;transition:.25s}
+.tl-btn b{display:block;letter-spacing:2px;font-size:1rem}
+.tl-btn span{font-size:.82rem;color:var(--muted)}
+.tl-btn:hover{border-color:rgba(216,169,78,.5)}
+.tl-btn.active{background:linear-gradient(160deg,#332414,#3d2a16);border-color:rgba(216,169,78,.55)}
+.tl-btn.active::before{opacity:1}
+.tl-panel{padding:28px;animation:fadeUp .5s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.tl-panel h3{color:var(--gold2);font-size:1.3rem;letter-spacing:2px}
+.tl-panel .years{color:var(--red2);font-size:.88rem;letter-spacing:2px;margin:4px 0 18px}
+.evt-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.evt{background:rgba(20,16,12,.45);border:1px solid var(--line);border-radius:10px;padding:14px 16px;transition:.25s}
+.evt:hover{border-color:rgba(216,169,78,.45);transform:translateY(-2px)}
+.evt b{color:var(--gold2);display:block;font-size:.95rem}
+.evt p{font-size:.85rem;color:var(--muted);margin-top:4px}
+.tl-extra{margin-top:16px;padding:14px 18px;border-left:3px solid var(--red);background:rgba(184,64,47,.12);border-radius:0 10px 10px 0;font-size:.9rem;color:var(--text)}
+.tl-extra b{color:var(--red2)}
+
+/* ===== 八旗 ===== */
+.banner-hero{border-radius:16px;overflow:hidden;position:relative;height:300px;border:1px solid var(--line);margin-bottom:26px}
+.banner-hero img{width:100%;height:100%;object-fit:cover}
+.banner-hero .cap{position:absolute;inset:auto 0 0 0;padding:40px 24px 16px;background:linear-gradient(transparent,rgba(10,8,5,.9));font-size:.88rem;color:var(--muted);letter-spacing:1px}
+.info-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:34px}
+.info-card{padding:22px}
+.info-card h4{color:var(--gold2);letter-spacing:2px;margin-bottom:10px;font-size:1.02rem}
+.info-card p,.info-card li{font-size:.9rem;color:var(--muted)}
+.info-card ul{list-style:none}
+.info-card li{padding:4px 0 4px 18px;position:relative}
+.info-card li::before{content:'◆';position:absolute;left:0;color:var(--red2);font-size:.6rem;top:11px}
+.group-strip{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:30px}
+@media(max-width:700px){.group-strip{grid-template-columns:1fr}}
+.group-box{padding:20px 22px;border-radius:14px;border:1px solid var(--line)}
+.group-box.up{background:linear-gradient(160deg,rgba(216,169,78,.14),rgba(216,169,78,.04));border-color:rgba(216,169,78,.5)}
+.group-box.down{background:linear-gradient(160deg,rgba(184,64,47,.14),rgba(184,64,47,.04));border-color:rgba(184,64,47,.5)}
+.group-box h4{letter-spacing:3px;font-size:1.05rem;margin-bottom:6px}
+.group-box.up h4{color:var(--gold2)} .group-box.down h4{color:var(--red2)}
+.group-box p{font-size:.88rem;color:var(--muted)}
+.flag-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:36px}
+.flag-card{padding:14px;text-align:center;transition:.3s;border:1px solid var(--line);border-radius:14px;background:var(--panel);cursor:pointer}
+.flag-card:hover{transform:translateY(-5px);border-color:rgba(216,169,78,.6);box-shadow:0 14px 30px rgba(0,0,0,.4)}
+.flag-card svg{width:100%;height:auto;display:block}
+.flag-card .fname{font-weight:700;letter-spacing:2px;margin-top:8px}
+.flag-card .fgroup{display:inline-block;margin-top:6px;font-size:.72rem;padding:2px 10px;border-radius:999px;letter-spacing:1px}
+.fgroup.up{background:rgba(216,169,78,.15);color:var(--gold2);border:1px solid rgba(216,169,78,.4)}
+.fgroup.down{background:rgba(184,64,47,.15);color:var(--red2);border:1px solid rgba(184,64,47,.4)}
+.sub-title{font-size:1.25rem;letter-spacing:3px;color:var(--gold2);margin:38px 0 16px;font-weight:700}
+.acc{border:1px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden;background:var(--panel)}
+.acc-head{width:100%;background:none;border:none;color:var(--text);padding:16px 20px;display:flex;justify-content:space-between;align-items:center;font-size:.98rem;letter-spacing:1px}
+.acc-head .arr{color:var(--gold);transition:.3s}
+.acc.open .arr{transform:rotate(90deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .4s ease;padding:0 20px}
+.acc.open .acc-body{max-height:300px;padding-bottom:18px}
+.acc-body p{font-size:.9rem;color:var(--muted)}
+.acc-body b{color:var(--gold2)}
+.fun-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:20px}
+.fact{padding:18px;border-radius:12px;border:1px dashed rgba(216,169,78,.5);background:rgba(216,169,78,.06);font-size:.88rem;color:var(--muted)}
+.fact b{color:var(--gold2)}
+
+/* 後宮等級小遊戲 */
+.rank-game{padding:26px;margin-top:20px}
+.rank-game h4{color:var(--gold2);letter-spacing:2px;margin-bottom:6px}
+.rank-game .desc{font-size:.88rem;color:var(--muted);margin-bottom:18px}
+.rank-chips{display:flex;flex-wrap:wrap;gap:10px}
+.rchip{padding:10px 20px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:.95rem;letter-spacing:2px;transition:.2s}
+.rchip:hover{border-color:var(--gold)}
+.rchip.locked{background:linear-gradient(160deg,#3a2c14,#4a3418);border-color:var(--gold);color:var(--gold2);cursor:default}
+.rchip.wrong{animation:shake .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.rank-msg{margin-top:16px;font-size:.92rem;min-height:26px;color:var(--green)}
+.rank-reset{margin-top:8px;background:none;border:1px solid var(--line);color:var(--muted);padding:8px 18px;border-radius:999px;font-size:.82rem}
+.rank-reset:hover{color:var(--gold2);border-color:var(--gold)}
+
+/* ===== 思想控制 ===== */
+.quote-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:30px}
+.quote{padding:20px;font-size:.88rem;color:var(--muted);position:relative}
+.quote::before{content:'「';position:absolute;top:6px;left:12px;font-size:2rem;color:var(--red2);opacity:.5}
+.quote p{padding-left:22px}
+.quote b{display:block;color:var(--gold2);margin-top:10px;padding-left:22px;font-size:.8rem;letter-spacing:1px}
+.chart-card{padding:26px;margin-bottom:22px}
+.chart-card h4{letter-spacing:2px;color:var(--gold2);margin-bottom:6px}
+.chart-card .csub{font-size:.82rem;color:var(--muted);margin-bottom:20px}
+.bar-row{display:grid;grid-template-columns:86px 1fr 64px;gap:12px;align-items:center;margin-bottom:12px}
+.bar-row .bl{font-size:.9rem;letter-spacing:1px}
+.bar-track{height:14px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden}
+.bar-fill{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--red),var(--gold));transition:width 1.2s cubic-bezier(.2,.7,.3,1)}
+.bar-row .bv{font-size:.85rem;color:var(--gold2);text-align:right}
+.case-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-top:26px}
+.case{padding:20px;border-radius:12px;border:1px solid var(--line);background:var(--panel);transition:.3s;position:relative;overflow:hidden}
+.case:hover{transform:translateY(-4px);border-color:rgba(184,64,47,.6)}
+.case .idx{font-size:1.6rem;font-weight:900;color:var(--red2);opacity:.7}
+.case h5{margin:8px 0;letter-spacing:1px;font-size:1rem;color:var(--gold2)}
+.case p{font-size:.84rem;color:var(--muted)}
+.siku{display:grid;grid-template-columns:1fr 1fr;gap:0;border-radius:16px;overflow:hidden;border:1px solid var(--line);margin-top:34px}
+@media(max-width:800px){.siku{grid-template-columns:1fr}}
+.siku-img{min-height:300px;background:url('https://image.qwenlm.ai/public_source/be152eb7-4e95-419a-9204-4070c2dc6750/12ccc6712-5e60-4c89-b27c-03adf6712.png') center/cover}
+.siku-img{background-image:url('https://image.qwenlm.ai/public_source/be152eb7-4e95-419a-9204-4070c2dc6750/12ccc6712-5e60-4c89-b27c-03adf6712.png')}
+.siku-body{padding:30px;background:linear-gradient(160deg,#241a10,#2e2113)}
+.siku-body h4{color:var(--gold2);font-size:1.3rem;letter-spacing:3px;margin-bottom:14px}
+.siku-body ul{list-style:none}
+.siku-body li{padding:10px 0 10px 26px;position:relative;font-size:.9rem;color:var(--muted);border-bottom:1px dashed var(--line)}
+.siku-body li:last-child{border:none}
+.siku-body li::before{content:'卷';position:absolute;left:0;color:var(--red2);font-size:.8rem}
+.siku-body li b{color:var(--gold2)}
+
+/* ===== 測驗 ===== */
+.quiz-box{max-width:760px;margin:0 auto;padding:32px;position:relative}
+.quiz-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:.88rem;color:var(--muted)}
+.quiz-prog{height:6px;background:rgba(255,255,255,.07);border-radius:999px;overflow:hidden;margin-bottom:26px}
+.quiz-prog i{display:block;height:100%;background:linear-gradient(90deg,var(--red),var(--gold));width:0;transition:width .4s}
+.q-text{font-size:1.12rem;letter-spacing:1px;margin-bottom:20px;font-weight:700}
+.q-opts{display:grid;gap:10px}
+.q-opt{text-align:left;padding:14px 18px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:.95rem;transition:.2s}
+.q-opt:hover:not(:disabled){border-color:var(--gold);transform:translateX(4px)}
+.q-opt.correct{border-color:var(--green);background:rgba(111,158,106,.15);color:#bfe3bb}
+.q-opt.wrong{border-color:var(--red2);background:rgba(184,64,47,.15);color:#f0b7ac}
+.q-exp{margin-top:18px;padding:14px 18px;border-left:3px solid var(--gold);background:rgba(216,169,78,.08);border-radius:0 10px 10px 0;font-size:.88rem;color:var(--muted);display:none}
+.q-next{margin-top:20px;width:100%;padding:13px;border:none;border-radius:10px;background:linear-gradient(90deg,var(--red),#8a2f22);color:var(--gold2);letter-spacing:3px;font-size:.98rem;font-weight:700;display:none;transition:.25s}
+.q-next:hover{filter:brightness(1.15)}
+.quiz-end{text-align:center;padding:20px 0}
+.quiz-end .score{font-size:3.4rem;font-weight:900;color:var(--gold2)}
+.quiz-end .rank-title{font-size:1.2rem;letter-spacing:4px;color:var(--red2);margin:8px 0 14px}
+.quiz-end p{color:var(--muted);font-size:.92rem}
+/* 閃卡 */
+.fc-wrap{max-width:560px;margin:44px auto 0;text-align:center}
+.fc{perspective:1200px;height:230px;cursor:pointer;margin-bottom:18px}
+.fc-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .6s}
+.fc.flipped .fc-inner{transform:rotateY(180deg)}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;border:1px solid var(--line)}
+.fc-front{background:linear-gradient(160deg,#332414,#412c17)}
+.fc-front h3{font-size:1.7rem;letter-spacing:6px;color:var(--gold2)}
+.fc-front span{margin-top:14px;color:var(--muted);font-size:.78rem;letter-spacing:2px}
+.fc-back{background:linear-gradient(160deg,#3a2417,#4a2c1a);transform:rotateY(180deg);border-color:rgba(216,169,78,.5)}
+.fc-back p{font-size:.98rem}
+.fc-ctrl{display:flex;justify-content:center;gap:14px;align-items:center}
+.fc-ctrl button{background:none;border:1px solid var(--line);color:var(--gold2);padding:9px 22px;border-radius:999px;letter-spacing:2px;transition:.2s}
+.fc-ctrl button:hover{border-color:var(--gold);background:rgba(216,169,78,.1)}
+.fc-count{color:var(--muted);font-size:.85rem;min-width:60px}
+
+/* ===== 彈窗 ===== */
+.modal{position:fixed;inset:0;background:rgba(10,7,4,.8);backdrop-filter:blur(6px);z-index:950;display:none;align-items:center;justify-content:center;padding:20px}
+.modal.show{display:flex}
+.modal-panel{max-width:520px;width:100%;background:linear-gradient(160deg,#241a10,#2e2113);border:1px solid rgba(216,169,78,.4);border-radius:18px;padding:30px;position:relative;animation:fadeUp .35s ease;max-height:88vh;overflow:auto}
+.modal-close{position:absolute;top:14px;right:14px;background:none;border:1px solid var(--line);color:var(--muted);width:36px;height:36px;border-radius:50%;font-size:1rem}
+.modal-close:hover{color:var(--gold2);border-color:var(--gold)}
+.modal-flag{max-width:230px;margin:0 auto 18px;display:block}
+.modal-panel h3{text-align:center;letter-spacing:4px;font-size:1.4rem;color:var(--gold2)}
+.modal-group{text-align:center;margin:6px 0 18px}
+.mrow{display:flex;justify-content:space-between;gap:14px;padding:10px 4px;border-bottom:1px dashed var(--line);font-size:.9rem}
+.mrow span{color:var(--muted)} .mrow b{color:var(--text);text-align:right}
+.mnote{margin-top:14px;font-size:.85rem;color:var(--muted);background:rgba(216,169,78,.08);padding:12px 14px;border-radius:10px;border-left:3px solid var(--gold)}
+
+footer{margin-top:80px;border-top:1px solid var(--line);padding:36px 20px;text-align:center;color:var(--muted);font-size:.85rem;letter-spacing:1px}
+footer b{color:var(--gold2)}
+</style>
+</head>
+<body>
+<div id="progressBar"></div>
+
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">大清<span>‧</span>互動學堂</div>
+    <a href="#overview" class="active">朝代總覽</a>
+    <a href="#timeline">歷史分期</a>
+    <a href="#banners">八旗制度</a>
+    <a href="#control">思想控制</a>
+    <a href="#quiz">學習測驗</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-kicker">互動式歷史學習網頁</div>
+    <h1 class="hero-title">清代歷史<em>簡論</em> × 八旗<em>制度</em></h1>
+    <p class="hero-sub">從女真崛起、清軍入關，到八旗組織與文字獄的思想控制——透過時間軸、旗色圖鑑、翻卡與測驗，完整掌握兩份講義的重點知識。</p>
+    <div class="hero-chips">
+      <span class="chip">1615 八旗創立</span>
+      <span class="chip">1644 清軍入關</span>
+      <span class="chip">1662 南明亡</span>
+      <span class="chip">1772 四庫開修</span>
+      <span class="chip">1911 辛亥革命</span>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><b>268</b><span>入關至清亡（年）</span></div>
+      <div class="stat"><b>8</b><span>八旗旗色</span></div>
+      <div class="stat"><b>170+</b><span>清代文字獄起數</span></div>
+      <div class="stat"><b>9.97億</b><span>四庫全書字數</span></div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ 總覽 ============ -->
+<section id="overview">
+  <div class="sec-head reveal">
+    <div class="sec-label">FEATURES OF QING</div>
+    <h2 class="sec-title">清代的七大特點</h2>
+    <p class="sec-desc">點擊卡片翻面，查看每個特點的說明。清代是中國最後一個王朝，也是奠定現代中國疆域與國家基礎的關鍵時代。</p>
+  </div>
+  <div class="flip-grid" id="featGrid"></div>
+</section>
+
+<!-- ============ 時間軸 ============ -->
+<section id="timeline">
+  <div class="sec-head reveal">
+    <div class="sec-label">HISTORICAL PERIODS</div>
+    <h2 class="sec-title">清代歷史分期</h2>
+    <p class="sec-desc">點選左側時期，展開該階段重大事件。清代歷史可分為開端、前期、中期、後期四階段。</p>
+  </div>
+  <div class="tl-wrap reveal">
+    <div class="tl-btns" id="tlBtns"></div>
+    <div class="card tl-panel" id="tlPanel"></div>
+  </div>
+</section>
+
+<!-- ============ 八旗 ============ -->
+<section id="banners">
+  <div class="sec-head reveal">
+    <div class="sec-label">EIGHT BANNERS SYSTEM</div>
+    <h2 class="sec-title">清代八旗制度</h2>
+    <p class="sec-desc">清朝特有的集軍事、生產和行政管理於一體的社會組織。旗下之人稱作「旗人」或「八旗子弟」。</p>
+  </div>
+
+  <div class="banner-hero reveal">
+    <img src="https://image.qwenlm.ai/public_source/be152eb7-4e95-419a-9204-4070c2dc6750/138d42745-770b-4197-98b5-b451ca9e33ee.png" alt="八旗將士">
+    <div class="cap">八旗雛形來自明代女真人的射獵小隊「牛錄」，努爾哈赤改善此制，於 1615 年正式創立八旗。</div>
+  </div>
+
+  <div class="info-row reveal">
+    <div class="card info-card">
+      <h4>何謂八旗？</h4>
+      <p>集軍事、生產、行政管理於一體的社會組織。原以滿洲人為主體，後增設<b style="color:var(--gold2)">蒙古八旗</b>與<b style="color:var(--gold2)">漢軍八旗</b>；漢軍八旗前身主要為早期滿洲八旗中的漢族人丁，非土生漢人。</p>
+    </div>
+    <div class="card info-card">
+      <h4>旗人特權・旗民分治</h4>
+      <ul>
+        <li>漢地統治沿用明制，八旗獨立於體系之外，稱「國中之國」</li>
+        <li>「生則入檔，壯則當兵」</li>
+        <li>教育、科考、任職、律法等皆享特權</li>
+      </ul>
+    </div>
+    <div class="card info-card">
+      <h4>工作編制</h4>
+      <ul>
+        <li><b>禁旅八旗</b>：在京八旗軍隊，又稱勁旅八旗、京旗</li>
+        <li><b>駐防八旗</b>：派往全國駐防，一省一至三處，長江以北較多</li>
+        <li><b>內務府三旗</b>：上三旗包衣，管理皇家事務、鹽政榷關</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="group-strip reveal">
+    <div class="group-box up"><h4>上三旗</h4><p>由<b>皇帝親領</b>：鑲黃旗、正黃旗、正白旗。其包衣稱「內務府屬」（內三旗包衣）。</p></div>
+    <div class="group-box down"><h4>下五旗</h4><p>由<b>諸王、貝勒、貝子分領</b>：正紅、鑲白、鑲紅、正藍、鑲藍。其包衣稱「王公府屬」。</p></div>
+  </div>
+
+  <h3 class="sub-title reveal">八旗圖鑑・點擊查看詳情</h3>
+  <div class="flag-grid reveal" id="flagGrid"></div>
+
+  <h3 class="sub-title reveal">名詞解釋</h3>
+  <div id="accList" class="reveal"></div>
+
+  <h3 class="sub-title reveal">身分的提升</h3>
+  <div class="info-row reveal">
+    <div class="card info-card">
+      <h4>① 抬旗</h4>
+      <ul>
+        <li>康熙生母孝康章皇后娘家本姓佟，漢軍正藍旗 → 改佟佳氏入滿洲正黃旗</li>
+        <li>慈禧家族葉赫那拉氏原屬滿洲鑲藍旗 → 抬入鑲黃旗</li>
+        <li>如《甄嬛傳》：漢軍正藍旗甄嬛 → 賜姓鈕祜祿氏、抬旗滿洲鑲黃旗</li>
+      </ul>
+    </div>
+    <div class="card info-card">
+      <h4>② 改姓</h4>
+      <ul>
+        <li>后妃姓氏加「佳」字滿族化以提高身分</li>
+        <li>乾隆朝：慧賢皇貴妃高佳氏、孝儀純皇后魏佳氏、淑嘉皇貴妃金佳氏、純惠皇貴妃蘇佳氏、忻貴妃戴佳氏</li>
+        <li>並非所有「～佳」姓氏皆為滿化漢姓</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="fun-facts reveal">
+    <div class="fact"><b>Ｑ：漢軍旗之女可以選秀女嗎？</b><br>可以！漢軍旗屬八旗、有旗籍。挑選八旗秀女事隸戶部，每旗分滿、蒙、漢為先後。</div>
+    <div class="fact"><b>Ｑ：「滿漢不同婚」指什麼？</b><br>指<b>旗人與民人</b>不能通婚；旗內通婚則不受限制。</div>
+    <div class="fact"><b>Ｑ：曹雪芹出身？</b><br>清<b>內務府正白旗包衣</b>——《紅樓夢》正寫於康熙諸子爭位、雍正勝出後的時代背景。</div>
+  </div>
+
+  <div class="card rank-game reveal">
+    <h4>互動小遊戲：清代後宮等級排序</h4>
+    <p class="desc">請依「由高至低」的順序點擊等級（皇后 → 答應）。點錯會震動提示喔！</p>
+    <div class="rank-chips" id="rankChips"></div>
+    <div class="rank-msg" id="rankMsg"></div>
+    <button class="rank-reset" id="rankReset">重新開始</button>
+  </div>
+</section>
+
+<!-- ============ 思想控制 ============ -->
+<section id="control">
+  <div class="sec-head reveal">
+    <div class="sec-label">THOUGHT CONTROL</div>
+    <h2 class="sec-title">思想控制：文字獄與《四庫全書》</h2>
+    <p class="sec-desc">「避席畏聞文字獄，著書只為稻粱謀。」——龔自珍。清代文字獄與禁書規模冠絕歷代。</p>
+  </div>
+
+  <div class="quote-row reveal">
+    <div class="card quote"><p>舊時謂統治者為迫害知識份子，故意從其著作中摘取字句，羅織成罪。</p><b>——《漢語大詞典》</b></div>
+    <div class="card quote"><p>明清時因文字犯禁或藉文字羅織罪名清除異己而設置的刑獄。</p><b>——《中國大百科全書》</b></div>
+    <div class="card quote"><p>避席畏聞文字獄，著書只為稻粱謀。</p><b>——清・龔自珍（對文人的影響）</b></div>
+  </div>
+
+  <div class="card chart-card reveal">
+    <h4>各朝文字獄起數</h4>
+    <div class="csub">據鄧之誠《中華二千年史》卷五〈清代文字獄簡表〉統計</div>
+    <div id="chart1"></div>
+  </div>
+
+  <div class="card chart-card reveal">
+    <h4>清代禁書 vs 明代（倍數）</h4>
+    <div class="csub">清代禁書無論數量或次數都遠超明朝，甚至冠於任何朝代</div>
+    <div id="chart2"></div>
+  </div>
+
+  <h3 class="sub-title reveal">清代重要的文字獄</h3>
+  <div class="case-grid reveal" id="caseGrid"></div>
+
+  <div class="siku reveal">
+    <div class="siku-img"></div>
+    <div class="siku-body">
+      <h4>《四庫全書》的修纂</h4>
+      <ul>
+        <li>乾隆三十八年（1772）開始編修，乾隆四十六年（1783）編成第一套，<b>歷時 11 年</b>。收書 <b>3,503 種、79,337 卷</b>，約 <b>9.97 億字</b>。</li>
+        <li>《四庫全書總目提要》開創了中國<b>目錄學</b>，有相當文化意義。</li>
+        <li>禁毀書籍甚多，甚至不留原文直接修改內容，被視為一大<b>書厄</b>。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 測驗 ============ -->
+<section id="quiz">
+  <div class="sec-head reveal">
+    <div class="sec-label">QUIZ & FLASHCARDS</div>
+    <h2 class="sec-title">學習測驗・閃卡</h2>
+    <p class="sec-desc">先翻閃卡複習名詞，再挑戰十題測驗，看看你能取得什麼功名！</p>
+  </div>
+
+  <div class="card quiz-box reveal" id="quizBox"></div>
+
+  <div class="fc-wrap reveal">
+    <h3 class="sub-title" style="text-align:center;margin-top:0">名詞閃卡（點擊翻面）</h3>
+    <div class="fc" id="fcCard">
+      <div class="fc-inner">
+        <div class="fc-face fc-front"><h3 id="fcFront">牛錄</h3><span>點擊翻面查看解釋</span></div>
+        <div class="fc-face fc-back"><p id="fcBack"></p></div>
+      </div>
+    </div>
+    <div class="fc-ctrl">
+      <button id="fcPrev">← 上一張</button>
+      <span class="fc-count" id="fcCount">1 / 10</span>
+      <button id="fcNext">下一張 →</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  資料來源：<b>0229清代歷史簡論.pdf</b>・<b>0222清代八旗制度.pdf</b>｜互動式學習網頁
+</footer>
+
+<!-- 彈窗 -->
+<div class="modal" id="modal">
+  <div class="modal-panel">
+    <button class="modal-close" id="modalClose">✕</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+/* ================= 資料 ================= */
+var FEATURES=[
+ {t:'最後一個異族統治政權',d:'女真族 → 滿洲人（旗人）建立清朝，為中國最後一個由異族統治的政權。'},
+ {t:'最後一個中央皇權・王朝',d:'清代是中國最後一個中央皇權、最後一個王朝，終結於辛亥革命。'},
+ {t:'大一統的國土疆域',d:'奠定現代中國國土的疆域，對台灣擁有實際統治權。'},
+ {t:'首次納入台灣',d:'首次將台灣納入統治範圍內：鄭氏降清、東寧政權亡，台灣歸入清版圖。'},
+ {t:'部分繼承明朝制度',d:'保留明代故宮，並沿用部分政治制度；漢地統治基本沿用明制。'},
+ {t:'思想控制極為嚴密',d:'近百場文字獄、禁書規模為明朝好幾倍，《四庫全書》亦伴隨禁毀書籍。'},
+ {t:'現代化國家的奠定基礎',d:'洋務運動、維新運動、清末新政、革命風潮，推動中國走向現代化。'}
+];
+var PERIODS=[
+ {label:'開端',years:'明代的衰亡',title:'開端：明代的衰亡',events:[
+  ['明末三大案','梃擊案、紅丸案、移宮案，動搖國本。'],
+  ['東林黨爭','朝堂黨爭不斷，政治日益腐敗。'],
+  ['各地天災不斷','民不聊生，動盪加劇。'],
+  ['流寇興起','李自成攻入北京，明亡。'],
+  ['崇禎殺袁崇煥','自毀長城，邊防崩壞。'],
+  ['建州女真興起','滿洲勢力於東北崛起。']],extra:''},
+ {label:'前期',years:'1644 – 1735（順治～雍正）',title:'前期：順治入關 – 雍正末年',events:[
+  ['吳三桂開山海關','清軍入關，開展清朝統治。'],
+  ['抗清與遺民','抗清：顧炎武、黃宗羲；隱居不仕：王夫之；出家：傅山、方以智；移居海外：朱舜水。'],
+  ['施琅歸清・鄭氏降清','東寧政權亡，台灣歸入清版圖。'],
+  ['三藩之亂','康熙平定三藩，鞏固統治。'],
+  ['文字獄初興','莊廷鑨明史案、戴名世南山案。'],
+  ['博學鴻儒科・南巡','籠絡漢人知識分子，多次下江南。'],
+  ['康熙諸子爭位','雍正勝出；成為《紅樓夢》時代背景。']],
+  extra:'過渡時期：南明政權（1644–1662）——福王弘光帝（南京）、魯王監國朱以海（浙江–金門）、唐王隆武帝（福建）、桂王永曆帝（一度逃緬甸，咒水之難，被吳三桂殺）。清軍屠殺漢人，各地抗清運動不斷。'},
+ {label:'中期',years:'1736 – 1839（乾隆～道光十九年）',title:'中期：乾隆初年 – 道光十九年',events:[
+  ['十全武功','乾隆自號「十全老人」。'],
+  ['編纂《四庫全書》','最大型的編書運動，亦伴隨禁毀書籍。'],
+  ['馬戛爾尼使團來訪','英國使團訪華，中西接觸。'],
+  ['晚年寵信和珅','「和珅跌倒，嘉慶吃飽」。'],
+  ['人口達三億','乾隆末年中國人口已達三億。'],
+  ['白蓮教・天理教之亂','嘉慶十八年（1813）林清率二百名天理教徒在宦官內應下攻入紫禁城，至隆宗門方被擊敗（癸酉之變）。'],
+  ['嘉道中衰','國勢由盛轉衰。']],extra:''},
+ {label:'後期',years:'1840 – 1911（道光二十～宣統三年）',title:'後期：遭受西方勢力強力打擊的時代',events:[
+  ['鴉片戰爭','西方勢力與思潮強力打擊之始。'],
+  ['英法聯軍','各地教案頻傳。'],
+  ['太平天國之亂','以旗人勢力為主的綠營被消滅，漢人勢力崛起（湘軍、淮軍），開始聘外國軍官訓練清兵（常勝軍）。'],
+  ['洋務運動','師夷長技以制夷。'],
+  ['中日甲午戰爭','台灣乙未抗日。'],
+  ['戊戌變法','百日維新。'],
+  ['義和團・八國聯軍','庚子賠款：1909 年起美國將之用於教育，例如成立清華學校。'],
+  ['清末新政','取消科舉制度、君主立憲制、貴族內閣。'],
+  ['保路運動・辛亥革命','清亡，沒有被趕盡殺絕的最後王朝落幕。']],extra:''}
+];
+var BANNERS=[
+ {name:'鑲黃旗',group:'up',type:'鑲',color:'#e6b93f',border:'#c23b2e',zuoling:'86 佐領、2 半分佐領',troops:'約 30,000',pop:'約 230,000',lord:'皇帝',other:'無',general:'盛京將軍',note:''},
+ {name:'正黃旗',group:'up',type:'正',color:'#e6b93f',border:null,zuoling:'92 佐領、2 半分佐領',troops:'約 32,000',pop:'約 250,000',lord:'皇帝',other:'無',general:'吉林將軍',note:''},
+ {name:'正白旗',group:'up',type:'正',color:'#f1eee2',border:null,zuoling:'86 佐領',troops:'約 30,000',pop:'約 270,000',lord:'皇帝',other:'無',general:'涼州將軍',note:'順治初年旗主為睿親王多爾袞；其死後由順治帝接掌，至此由皇帝親統，成為上三旗之一。'},
+ {name:'正紅旗',group:'down',type:'正',color:'#bf3a2b',border:null,zuoling:'84 佐領',troops:'約 26,000',pop:'約 245,000',lord:'禮親王',other:'順承郡王',general:'黑龍江將軍',note:''},
+ {name:'鑲白旗',group:'down',type:'鑲',color:'#f1eee2',border:'#bf3a2b',zuoling:'84 佐領',troops:'約 26,000',pop:'約 230,000',lord:'肅親王',other:'醇親王',general:'—',note:''},
+ {name:'鑲紅旗',group:'down',type:'鑲',color:'#bf3a2b',border:'#f1eee2',zuoling:'86 佐領',troops:'約 28,000',pop:'約 230,000',lord:'克勤郡王',other:'莊親王',general:'—',note:''},
+ {name:'正藍旗',group:'down',type:'正',color:'#2f4d8a',border:null,zuoling:'83 佐領、11 半分佐領',troops:'約 27,000',pop:'約 250,000',lord:'豫親王',other:'睿親王、怡親王',general:'—',note:''},
+ {name:'鑲藍旗',group:'down',type:'鑲',color:'#2f4d8a',border:'#bf3a2b',zuoling:'87 佐領、1 半分佐領',troops:'約 28,000',pop:'約 250,000',lord:'鄭親王',other:'—',general:'—',note:''}
+];
+var TERMS=[
+ ['佐領','清朝八旗當中的<b>基本單位</b>。'],
+ ['旗分佐領下人','八旗制度的中堅力量，從普通旗兵至世家貴族的主要來源。'],
+ ['包衣','主要擔任府員、護衛、隨侍、莊頭、陵寢園寢守護等差使，從事管家務、供差役、隨侍，有「<b>內八旗</b>」之稱。直屬皇帝的上三旗包衣稱「內務府屬」（內三旗包衣）；隸屬旗主王公的下五旗包衣稱「王公府屬」。'],
+ ['旗下家奴','八旗制度中整體地位<b>最低</b>的群體。'],
+ ['禁旅八旗','在京的八旗軍隊，又稱「勁旅八旗」或「京旗」。'],
+ ['駐防八旗','派往全國各地駐防的旗兵。各省不過一至三處，長江以北較多；湖南、江西、廣西、貴州未設駐防。'],
+ ['內務府三旗','簡稱內三旗，由鑲黃、正黃、正白旗包衣組成，自成系統，管理皇家膳食、服飾、工程、莊田、畜牧、採辦及鹽政、榷關。首領稱<b>總管內務府大臣</b>。']
+];
+var CASES=[
+ ['莊廷鑨明史案','私修明史觸忌，遭嚴酷株連，為清初重大文字獄。'],
+ ['戴名世南山集案','因《南山集》用南明年號獲罪。'],
+ ['查嗣庭試題案','出題「維民所止」被羅織成罪。'],
+ ['呂留良案','曾靜案牽連，催生《大義覺迷錄》；衍生呂四娘刺殺雍正傳說。'],
+ ['徐駿案','「明月有情遠顧我，清風無意不留人」、「清風不識字，何故亂翻書」獲罪。']
+];
+var CHART1=[['順治',6],['康熙',10],['雍正',25],['乾隆',130],['嘉慶',1],['光緒',1]];
+var CHART2=[['違礙書籍',29.2],['科舉時文',27.2],['劇本小說',10.2],['妖書',8],['禁書總數',12.6]];
+var QUIZ=[
+ {q:'八旗制度由誰改善並於 1615 年正式創立？',o:['皇太極','努爾哈赤','順治帝','康熙帝'],a:1,e:'八旗雛形來自女真射獵小隊「牛錄」，努爾哈赤改善後於 1615 年創立。'},
+ {q:'下列何者「不屬於」上三旗？',o:['鑲黃旗','正黃旗','正白旗','正藍旗'],a:3,e:'上三旗為鑲黃、正黃、正白（皇帝親領）；正藍旗屬下五旗。'},
+ {q:'曹雪芹（《紅樓夢》作者）的出身是？',o:['滿洲鑲黃旗','內務府正白旗包衣','漢軍正藍旗','蒙古鑲白旗'],a:1,e:'曹雪芹出身清內務府正白旗包衣。'},
+ {q:'清代文字獄最盛的皇帝是？',o:['康熙（約10起）','雍正（20幾起）','乾隆（130多起）','順治（6起）'],a:2,e:'乾隆朝文字獄達 130 多起，為歷朝之最。'},
+ {q:'《四庫全書》自開修到編成第一套，歷時多久？',o:['5 年','8 年','11 年','20 年'],a:2,e:'1772 年開修，1783 年編成第一套，歷時 11 年。'},
+ {q:'嘉慶十八年（1813）攻入紫禁城隆宗門的事件是？',o:['三藩之亂','天理教民之亂（癸酉之變）','義和團之亂','保路運動'],a:1,e:'林清率二百名天理教徒在宦官內應下進攻紫禁城，至隆宗門方被擊敗。'},
+ {q:'清代禁書「總數」約為明代的多少倍？',o:['8 倍','10.2 倍','12.6 倍','29.2 倍'],a:2,e:'禁書總數約明代 12.6 倍；違礙書籍更高達約 29.2 倍。'},
+ {q:'慈禧太后家族葉赫那拉氏原屬哪旗，後被抬旗？',o:['滿洲鑲藍旗 → 鑲黃旗','漢軍正藍旗 → 正黃旗','鑲白旗 → 正白旗','正紅旗 → 鑲黃旗'],a:0,e:'原出下五旗滿洲鑲藍旗，隨慈禧掌權抬入上三旗鑲黃旗。'},
+ {q:'庚子賠款自 1909 年起被美國用於教育，成立了哪所學校？',o:['京師大學堂','清華學校','北洋學堂','復旦公學'],a:1,e:'美國將庚子賠款用於教育，例如成立清華學校。'},
+ {q:'清朝終結於哪一年？',o:['道光二十年','光緒三十四年','宣統三年','嘉慶十八年'],a:2,e:'後期止於宣統三年（1911），辛亥革命後清亡。'}
+];
+var FLASH=[
+ ['牛錄','女真人的射獵小隊，八旗制度的雛形。'],
+ ['佐領','清朝八旗當中的基本單位。'],
+ ['包衣','從事管家務、供差役、隨侍，有「內八旗」之稱；上三旗包衣屬內務府。'],
+ ['抬旗','改變功臣、后妃家族的旗籍以提高出身，如慈禧家族抬入鑲黃旗。'],
+ ['文字獄','統治者故意從著作中摘取字句、羅織成罪，迫害知識份子。'],
+ ['禁旅八旗','在京的八旗軍隊，又稱勁旅八旗、京旗。'],
+ ['駐防八旗','派往全國各地駐防的旗兵，長江以北較多。'],
+ ['內務府三旗','上三旗包衣組成，管理皇家事務與鹽政、榷關。'],
+ ['癸酉之變','1813 年林清率天理教徒攻入紫禁城隆宗門。'],
+ ['四庫全書','收書 3,503 種、79,337 卷，約 9.97 億字；《總目提要》開創目錄學。']
+];
+var RANKS=['皇后','皇貴妃','貴妃','妃','嬪','貴人','常在','答應'];
+
+/* ================= 工具 ================= */
+function el(id){return document.getElementById(id)}
+function flagSVG(b,large){
+  var light=(b.color==='#e6b93f'||b.color==='#f1eee2');
+  var tc=light?'#2b2013':'#f5ead6';
+  var inner=b.border
+    ?'<rect x="14" y="8" width="118" height="78" rx="4" fill="'+b.border+'"/><rect x="24" y="18" width="98" height="58" rx="2" fill="'+b.color+'"/>'
+    :'<rect x="14" y="8" width="118" height="78" rx="4" fill="'+b.color+'"/>';
+  return '<svg viewBox="0 0 140 96"'+(large?' class="modal-flag"':'')+'>'
+   +'<rect x="6" y="2" width="4" height="92" rx="2" fill="#6b4a2b"/><circle cx="8" cy="4" r="4" fill="#d8a94e"/>'
+   +inner
+   +'<text x="73" y="55" text-anchor="middle" font-size="24" font-weight="900" fill="'+tc+'" font-family="Noto Serif TC,serif">'+b.type+'</text>'
+   +'</svg>';
+}
+
+/* ================= 特點翻卡 ================= */
+(function(){
+  var g=el('featGrid'),h='';
+  FEATURES.forEach(function(f,i){
+    h+='<div class="flip reveal" onclick="this.classList.toggle(\'flipped\')">'
+      +'<div class="flip-inner">'
+      +'<div class="flip-face flip-front"><div class="num">'+(i+1)+'</div><h3>'+f.t+'</h3><div class="hint">點擊翻面 ↺</div></div>'
+      +'<div class="flip-face flip-back"><h4>特點 '+(i+1)+'</h4><p>'+f.d+'</p></div>'
+      +'</div></div>';
+  });
+  g.innerHTML=h;
+})();
+
+/* ================= 時間軸 ================= */
+var tlCur=0;
+function renderTL(){
+  var bh='';
+  PERIODS.forEach(function(p,i){
+    bh+='<button class="tl-btn'+(i===tlCur?' active':'')+'" onclick="setTL('+i+')"><b>'+(i+1)+'. '+p.label+'</b><span>'+p.years+'</span></button>';
+  });
+  el('tlBtns').innerHTML=bh;
+  var p=PERIODS[tlCur],h='<h3>'+p.title+'</h3><div class="years">'+p.years+'</div><div class="evt-list">';
+  p.events.forEach(function(e){h+='<div class="evt"><b>'+e[0]+'</b><p>'+e[1]+'</p></div>'});
+  h+='</div>';
+  if(p.extra)h+='<div class="tl-extra"><b>補充｜</b>'+p.extra+'</div>';
+  el('tlPanel').innerHTML=h;
+}
+function setTL(i){tlCur=i;renderTL()}
+renderTL();
+
+/* ================= 八旗圖鑑 ================= */
+(function(){
+  var h='';
+  BANNERS.forEach(function(b,i){
+    h+='<div class="flag-card" onclick="openBanner('+i+')">'+flagSVG(b)
+      +'<div class="fname">'+b.name+'</div>'
+      +'<span class="fgroup '+(b.group==='up'?'up':'down')+'">'+(b.group==='up'?'上三旗':'下五旗')+'</span></div>';
+  });
+  el('flagGrid').innerHTML=h;
+})();
+function openBanner(i){
+  var b=BANNERS[i];
+  var h=flagSVG(b,true)+'<h3>'+b.name+'</h3>'
+   +'<div class="modal-group"><span class="fgroup '+(b.group==='up'?'up':'down')+'">'+(b.group==='up'?'上三旗・皇帝親領':'下五旗・諸王貝勒分領')+'</span></div>'
+   +'<div class="mrow"><span>佐領</span><b>'+b.zuoling+'</b></div>'
+   +'<div class="mrow"><span>兵力</span><b>'+b.troops+'</b></div>'
+   +'<div class="mrow"><span>總人口</span><b>'+b.pop+'</b></div>'
+   +'<div class="mrow"><span>旗主</span><b>'+b.lord+'</b></div>'
+   +'<div class="mrow"><span>其他主要領主</span><b>'+b.other+'</b></div>'
+   +'<div class="mrow"><span>將軍旗號</span><b>'+b.general+'</b></div>'
+   +(b.note?'<div class="mnote">'+b.note+'</div>':'');
+  el('modalBody').innerHTML=h;
+  el('modal').classList.add('show');
+}
+el('modalClose').onclick=function(){el('modal').classList.remove('show')};
+el('modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('show')});
+
+/* ================= 名詞解釋 ================= */
+(function(){
+  var h='';
+  TERMS.forEach(function(t,i){
+    h+='<div class="acc"><button class="acc-head" onclick="this.parentNode.classList.toggle(\'open\')"><span>'+t[0]+'</span><span class="arr">▶</span></button><div class="acc-body"><p>'+t[1]+'</p></div></div>';
+  });
+  el('accList').innerHTML=h;
+})();
+
+/* ================= 後宮排序遊戲 ================= */
+var rankStep=0;
+function renderRank(){
+  rankStep=0;el('rankMsg').textContent='';
+  var arr=RANKS.slice();
+  do{arr.sort(function(){return Math.random()-0.5})}while(arr.join('')===RANKS.join(''));
+  var h='';
+  arr.forEach(function(r){h+='<button class="rchip" onclick="rankClick(this,\''+r+'\')">'+r+'</button>'});
+  el('rankChips').innerHTML=h;
+}
+function rankClick(btn,name){
+  if(btn.classList.contains('locked'))return;
+  if(name===RANKS[rankStep]){
+    btn.classList.add('locked');
+    btn.textContent=(rankStep+1)+'. '+name;
+    rankStep++;
+    if(rankStep===RANKS.length)el('rankMsg').textContent='🎉 完全正確！你已掌握清代後宮等級：皇后→皇貴妃→貴妃→妃→嬪→貴人→常在→答應。';
+  }else{
+    btn.classList.add('wrong');
+    el('rankMsg').style.color='var(--red2)';
+    el('rankMsg').textContent='順序不對喔！目前應選「'+RANKS[rankStep]+'」。';
+    setTimeout(function(){btn.classList.remove('wrong');el('rankMsg').style.color='var(--green)'},500);
+  }
+}
+el('rankReset').onclick=renderRank;
+renderRank();
+
+/* ================= 圖表 ================= */
+function buildChart(id,data,unit,max){
+  var h='';
+  data.forEach(function(d){
+    h+='<div class="bar-row"><div class="bl">'+d[0]+'</div><div class="bar-track"><div class="bar-fill" data-w="'+(d[1]/max*100)+'"></div></div><div class="bv">'+d[1]+unit+'</div></div>';
+  });
+  el(id).innerHTML=h;
+}
+buildChart('chart1',CHART1,' 起',130);
+buildChart('chart2',CHART2,' 倍',30);
+
+/* ================= 文字獄案例 ================= */
+(function(){
+  var h='';
+  CASES.forEach(function(c,i){
+    h+='<div class="case"><div class="idx">'+(i+1)+'</div><h5>'+c[0]+'</h5><p>'+c[1]+'</p></div>';
+  });
+  el('caseGrid').innerHTML=h;
+})();
+
+/* ================= 測驗 ================= */
+var qIdx=0,qScore=0,qAnswered=false;
+function renderQuiz(){
+  qIdx=0;qScore=0;showQ();
+}
+function showQ(){
+  qAnswered=false;
+  var q=QUIZ[qIdx];
+  var h='<div class="quiz-top"><span>第 '+(qIdx+1)+' / '+QUIZ.length+' 題</span><span>得分：'+qScore+'</span></div>'
+   +'<div class="quiz-prog"><i style="width:'+(qIdx/QUIZ.length*100)+'%"></i></div>'
+   +'<div class="q-text">'+q.q+'</div><div class="q-opts">';
+  q.o.forEach(function(o,i){h+='<button class="q-opt" onclick="answer(this,'+i+')">'+String.fromCharCode(65+i)+'. '+o+'</button>'});
+  h+='</div><div class="q-exp" id="qExp">💡 '+q.e+'</div>'
+   +'<button class="q-next" id="qNext" onclick="nextQ()">'+(qIdx===QUIZ.length-1?'查看成績 →':'下一題 →')+'</button>';
+  el('quizBox').innerHTML=h;
+}
+function answer(btn,i){
+  if(qAnswered)return;qAnswered=true;
+  var q=QUIZ[qIdx],opts=document.querySelectorAll('.q-opt');
+  opts.forEach(function(o){o.disabled=true});
+  if(i===q.a){btn.classList.add('correct');qScore++}
+  else{btn.classList.add('wrong');opts[q.a].classList.add('correct')}
+  el('qExp').style.display='block';
+  el('qNext').style.display='block';
+}
+function nextQ(){
+  qIdx++;
+  if(qIdx<QUIZ.length)showQ();
+  else{
+    var rank=qScore>=9?'翰林院掌院學士':qScore>=7?'進士及第':qScore>=5?'舉人':qScore>=3?'秀才':'童生';
+    el('quizBox').innerHTML='<div class="quiz-end"><div class="score">'+qScore+' / '+QUIZ.length+'</div>'
+     +'<div class="rank-title">誥授・'+rank+'</div>'
+     +'<p>'+(qScore>=7?'厲害！你對清代歷史與八旗制度掌握得相當透徹。':'再複習一次上面的內容，挑戰更高功名吧！')+'</p>'
+     +'<button class="q-next" style="display:block;max-width:260px;margin:22px auto 0" onclick="renderQuiz()">再挑戰一次 ↺</button></div>';
+  }
+}
+renderQuiz();
+
+/* ================= 閃卡 ================= */
+var fcIdx=0;
+function showFC(){
+  el('fcCard').classList.remove('flipped');
+  el('fcFront').textContent=FLASH[fcIdx][0];
+  el('fcBack').textContent=FLASH[fcIdx][1];
+  el('fcCount').textContent=(fcIdx+1)+' / '+FLASH.length;
+}
+el('fcCard').onclick=function(){this.classList.toggle('flipped')};
+el('fcPrev').onclick=function(){fcIdx=(fcIdx-1+FLASH.length)%FLASH.length;showFC()};
+el('fcNext').onclick=function(){fcIdx=(fcIdx+1)%FLASH.length;showFC()};
+showFC();
+
+/* ================= 捲動效果 ================= */
+window.addEventListener('scroll',function(){
+  var h=document.documentElement;
+  el('progressBar').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+});
+var io=new IntersectionObserver(function(es){
+  es.forEach(function(e){
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      e.target.querySelectorAll('.bar-fill').forEach(function(b){b.style.width=b.dataset.w+'%'});
+      if(e.target.classList.contains('chart-card'))e.target.querySelectorAll('.bar-fill').forEach(function(b){b.style.width=b.dataset.w+'%'});
+    }
+  });
+},{threshold:.15});
+document.querySelectorAll('.reveal').forEach(function(n){io.observe(n)});
+
+/* scrollspy */
+var spy=new IntersectionObserver(function(es){
+  es.forEach(function(e){
+    if(e.isIntersecting){
+      document.querySelectorAll('nav a').forEach(function(a){
+        a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id);
+      });
+    }
+  });
+},{rootMargin:'-40% 0px -55% 0px'});
+['overview','timeline','banners','control','quiz'].forEach(function(id){spy.observe(el(id))});
+</script>
+</body>
+</html>
